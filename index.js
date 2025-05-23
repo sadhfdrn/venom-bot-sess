@@ -3,31 +3,26 @@ const wppconnect = require('@wppconnect-team/wppconnect');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const sessions = {};
 
 app.use(express.json());
-app.use(express.static('public'));
-
-const sessions = {}; // Store session clients
 
 app.post('/start-session', async (req, res) => {
-  const { phone } = req.body;
   const sessionId = `session_${Date.now()}`;
+  let pairCodeSent = false;
 
   try {
-    let pairCodeSent = false;
-
     const client = await wppconnect.create({
       session: sessionId,
       headless: true,
-      executablePath: '/usr/bin/chromium', // required for Koyeb
+      executablePath: '/usr/bin/google-chrome',
       browserArgs: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
         '--disable-gpu',
-        '--disable-software-rasterizer',
-        '--no-zygote',
-        '--single-process'
+        '--window-size=1920x1080'
       ],
       waitForLogin: true,
       catchQR: (base64Qrimg, asciiQR, attempts, urlCode) => {
