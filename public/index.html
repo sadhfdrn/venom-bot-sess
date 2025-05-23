@@ -98,12 +98,11 @@
 
       if (data.sessionId) {
         messageDiv.textContent = `Session started! ID: ${data.sessionId}`;
-
-        const source = new EventSource(`/qr/${data.sessionId}`);
-        source.onmessage = (event) => {
-          const { pairCode } = JSON.parse(event.data);
-          pairDiv.textContent = `PAIR CODE: ${pairCode}`;
-        };
+        if (data.pairCode) {
+          pairDiv.textContent = `PAIR CODE: ${data.pairCode}`;
+        } else {
+          pairDiv.textContent = 'Waiting for pair code...';
+        }
       } else {
         messageDiv.textContent = `Error: ${data.error}`;
         pairDiv.textContent = '';
