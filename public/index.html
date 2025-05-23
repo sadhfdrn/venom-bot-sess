@@ -15,48 +15,61 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
+      text-align: center;
     }
 
     h1 {
       color: #39ff14;
       margin-bottom: 20px;
+      font-size: 2.5em;
     }
 
     input[type="text"] {
-      padding: 10px;
+      padding: 12px;
       font-size: 18px;
-      border: 2px solid #39ff14;
-      border-radius: 5px;
-      margin-bottom: 10px;
-      width: 300px;
+      border: 2px solid #00bfff;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      width: 280px;
+      background-color: #222;
+      color: #fff;
     }
 
     button {
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 18px;
-      background-color: #000;
-      color: #39ff14;
-      border: 2px solid #39ff14;
-      border-radius: 5px;
+      background-color: #00bfff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 0 10px #39ff14;
+      box-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff;
       transition: 0.3s ease;
     }
 
     button:hover {
-      background-color: #39ff14;
-      color: #000;
+      background-color: #0080ff;
+      box-shadow: 0 0 20px #0080ff, 0 0 30px #0080ff;
+      color: #fff;
     }
 
     #message {
-      margin-top: 15px;
-      font-size: 18px;
+      margin-top: 20px;
+      font-size: 20px;
+      color: #00ffea;
+    }
+
+    #pair-code {
+      margin-top: 10px;
+      font-size: 24px;
+      color: #ff66ff;
+      font-weight: bold;
     }
 
     footer {
       position: absolute;
       bottom: 20px;
-      font-size: 24px;
+      font-size: 20px;
       color: #39ff14;
     }
   </style>
@@ -66,6 +79,7 @@
   <input type="text" id="phone" placeholder="Enter phone number" />
   <button onclick="startSession()">Start Session</button>
   <div id="message"></div>
+  <div id="pair-code"></div>
 
   <footer>Powered by Samuel</footer>
 
@@ -79,10 +93,21 @@
       });
 
       const data = await res.json();
-      const msg = document.getElementById('message');
-      msg.textContent = data.sessionId
-        ? `Session started! ID: ${data.sessionId}`
-        : `Error: ${data.error}`;
+      const messageDiv = document.getElementById('message');
+      const pairDiv = document.getElementById('pair-code');
+
+      if (data.sessionId) {
+        messageDiv.textContent = `Session started! ID: ${data.sessionId}`;
+
+        const source = new EventSource(`/qr/${data.sessionId}`);
+        source.onmessage = (event) => {
+          const { pairCode } = JSON.parse(event.data);
+          pairDiv.textContent = `PAIR CODE: ${pairCode}`;
+        };
+      } else {
+        messageDiv.textContent = `Error: ${data.error}`;
+        pairDiv.textContent = '';
+      }
     }
   </script>
 </body>
