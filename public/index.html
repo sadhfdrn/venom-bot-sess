@@ -1,31 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Start Your WhatsApp</title>
+  <title>WPPConnect Pair Code</title>
 </head>
 <body>
-  <h2>Start Your WhatsApp</h2>
-  <input type="text" id="phoneInput" placeholder="Enter phone number with country code" />
-  <button onclick="startSession()">Start</button>
-  <pre id="response"></pre>
+  <h2>Enter Phone Number to Start Pairing</h2>
+  <input type="text" id="phone" placeholder="e.g. 5511999999999" />
+  <button onclick="sendPhone()">Start Session</button>
+  <p id="result"></p>
 
   <script>
-    function startSession() {
-      const phone = document.getElementById('phoneInput').value;
-
-      fetch('/start', {
+    async function sendPhone() {
+      const phone = document.getElementById('phone').value;
+      const res = await fetch('/pair', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone })
-      })
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById('response').textContent = JSON.stringify(data, null, 2);
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById('response').textContent = JSON.stringify({ status: 'error', message: err.message });
       });
+      const data = await res.json();
+      document.getElementById('result').innerText = data.sessionId
+        ? 'Session ID sent to your WhatsApp!'
+        : 'Failed to start session.';
     }
   </script>
 </body>
