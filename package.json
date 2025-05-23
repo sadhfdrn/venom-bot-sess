@@ -1,13 +1,14 @@
 {
-  "name": "whatsapp-venom-bot",
+  "name": "wppconnect-session-bot",
   "version": "1.0.0",
-  "description": "Venom WhatsApp bot with frontend pairing",
+  "description": "WhatsApp session generator with WPPConnect",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
+    "@wppconnect-team/wppconnect": "^1.9.1",
     "express": "^4.18.2",
-    "venom-bot": "^5.0.5"
+    "body-parser": "^1.20.2"
   }
 }
