@@ -1,45 +1,39 @@
 const express = require('express');
-const venom = require('venom-bot');
+const bodyParser = require('body-parser');
+const wppconnect = require('@wppconnect-team/wppconnect');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.json());
-app.use(express.static('public')); // To serve HTML frontend
-
-app.post('/start', async (req, res) => {
+app.post('/pair', async (req, res) => {
   const { phone } = req.body;
+  if (!phone) return res.status(400).send('Phone number required');
 
-  if (!phone) {
-    return res.status(400).json({ status: 'error', message: 'Phone number is required' });
-  }
-
-  const sessionId = `session-${phone}`;
+  const sessionId = `session_${Date.now()}`;
 
   try {
-    venom
-      .create({
-        session: sessionId,
-        multidevice: true,
-        puppeteerOptions: {
-          args: ['--no-sandbox', '--disable-setuid-sandbox']
-        }
-      })
-      .then(client => {
-        client.sendText(`${phone}@c.us`, `Hello! Your Venom session (${sessionId}) is now active.`);
-        res.json({ status: 'success', sessionId });
-      })
-      .catch(err => {
-        console.error('Venom error:', err);
-        res.status(500).json({ status: 'error', message: 'Failed to create session' });
-      });
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    res.status(500).json({ status: 'error', message: 'Internal server error' });
+    const client = await wppconnect.create({
+      session: sessionId,
+      catchQR: (qrCode, asciiQR, attempts, urlCode) => {
+        console.log(`Scan this QR for ${sessionId}:`, urlCode);
+      },
+      statusFind: (statusSession, session) => {
+        console.log(`Session ${session} status:`, statusSession);
+      },
+      headless: true
+    });
+
+    await client.sendText(`${phone}@c.us`, `Your session ID is: ${sessionId}`);
+
+    res.send({ success: true, sessionId });
+  } catch (err) {
+    console.error('Error starting session:', err);
+    res.status(500).send('Error creating session');
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
 });
