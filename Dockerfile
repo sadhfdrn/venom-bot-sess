@@ -1,6 +1,6 @@
 FROM node:20-slim
 
-# Install Chromium & dependencies
+# Install Chromium and required dependencies
 RUN apt-get update && apt-get install -y \
   chromium \
   fonts-liberation \
@@ -13,25 +13,30 @@ RUN apt-get update && apt-get install -y \
   libgdk-pixbuf2.0-0 \
   libnspr4 \
   libnss3 \
+  libx11-xcb1 \
   libxcomposite1 \
   libxdamage1 \
   libxrandr2 \
+  libu2f-udev \
   xdg-utils \
   wget \
-  --no-install-recommends \
-  && rm -rf /var/lib/apt/lists/*
+  --no-install-recommends && \
+  rm -rf /var/lib/apt/lists/*
 
-# Set working dir
+# Set Puppeteer executable path for Chromium
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+# Set working directory
 WORKDIR /app
 
-# Copy files
+# Copy source code
 COPY . .
 
-# Install Node dependencies
-RUN npm install
+# Install Node.js dependencies
+RUN npm install --omit=dev
 
 # Expose port
 EXPOSE 3000
 
-# Run app
+# Start app
 CMD ["npm", "start"]
