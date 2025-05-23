@@ -1,15 +1,12 @@
-// index.js
 const express = require('express');
 const wppconnect = require('@wppconnect-team/wppconnect');
-const puppeteer = require('puppeteer');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.static('public'));
 
-// Create a session
 app.post('/start-session', async (req, res) => {
   const { phone } = req.body;
   const sessionId = `session_${Date.now()}`;
@@ -18,10 +15,10 @@ app.post('/start-session', async (req, res) => {
     const client = await wppconnect.create({
       session: sessionId,
       headless: true,
-      browserArgs: ['--no-sandbox'],
-      executablePath: '/usr/bin/chromium-browser',
+      browserArgs: ['--no-sandbox', '--disable-setuid-sandbox'],
+      waitForLogin: true,
       catchQR: (base64Qrimg, asciiQR, attempts, urlCode) => {
-        console.log(`QR CODE: ${urlCode}`);
+        console.log(`Scan this QR: ${urlCode}`);
       }
     });
 
