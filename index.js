@@ -16,30 +16,26 @@ app.post('/start-session', async (req, res) => {
   try {
     let pairCodeSent = false;
 
-  const client = await wppconnect.create({
-  session: sessionId,
-  headless: true,
-  executablePath: '/usr/bin/chromium',
-  browserArgs: [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--disable-dev-shm-usage',
-    '--disable-gpu',
-    '--disable-software-rasterizer',
-    '--no-zygote',
-    '--single-process'
-  ],
-  waitForLogin: true,
-  catchQR: (base64Qrimg, asciiQR, attempts, urlCode) => {
-    console.log(`Scan this Pairing Code: ${urlCode}`);
-    if (!pairCodeSent) {
-      pairCodeSent = true;
-      res.json({ sessionId, pairCode: urlCode });
-    }
-  }
-});
-        }
+    const client = await wppconnect.create({
+      session: sessionId,
+      headless: true,
+      executablePath: '/usr/bin/chromium', // required for Koyeb
+      browserArgs: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-software-rasterizer',
+        '--no-zygote',
+        '--single-process'
+      ],
+      waitForLogin: true,
+      catchQR: (base64Qrimg, asciiQR, attempts, urlCode) => {
         console.log(`Scan this Pairing Code: ${urlCode}`);
+        if (!pairCodeSent) {
+          pairCodeSent = true;
+          res.json({ sessionId, pairCode: urlCode });
+        }
       }
     });
 
