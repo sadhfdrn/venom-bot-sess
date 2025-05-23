@@ -1,26 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>WPPConnect Pair Code</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session Generator</title>
+  <style>
+    body {
+      background-color: #111;
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #39ff14;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 18px;
+      border: 2px solid #39ff14;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      width: 300px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #000;
+      color: #39ff14;
+      border: 2px solid #39ff14;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #39ff14;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #39ff14;
+      color: #000;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 24px;
+      color: #39ff14;
+    }
+  </style>
 </head>
 <body>
-  <h2>Enter Phone Number to Start Pairing</h2>
-  <input type="text" id="phone" placeholder="e.g. 5511999999999" />
-  <button onclick="sendPhone()">Start Session</button>
-  <p id="result"></p>
+  <h1>Generate WhatsApp Session</h1>
+  <input type="text" id="phone" placeholder="Enter phone number" />
+  <button onclick="startSession()">Start Session</button>
+  <div id="message"></div>
+
+  <footer>Powered by Samuel</footer>
 
   <script>
-    async function sendPhone() {
+    async function startSession() {
       const phone = document.getElementById('phone').value;
-      const res = await fetch('/pair', {
+      const res = await fetch('/start-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone })
       });
+
       const data = await res.json();
-      document.getElementById('result').innerText = data.sessionId
-        ? 'Session ID sent to your WhatsApp!'
-        : 'Failed to start session.';
+      const msg = document.getElementById('message');
+      msg.textContent = data.sessionId
+        ? `Session started! ID: ${data.sessionId}`
+        : `Error: ${data.error}`;
     }
   </script>
 </body>
