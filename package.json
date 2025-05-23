@@ -1,14 +1,13 @@
 {
   "name": "wppconnect-session-bot",
   "version": "1.0.0",
-  "description": "WhatsApp session generator with WPPConnect",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "@wppconnect-team/wppconnect": "^1.9.1",
+    "@wppconnect-team/wppconnect": "^1.9.9",
     "express": "^4.18.2",
-    "body-parser": "^1.20.2"
+    "puppeteer": "^21.3.8"
   }
 }
