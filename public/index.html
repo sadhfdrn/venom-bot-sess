@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Start Your WhatsApp</title>
+</head>
+<body>
+  <h2>Start Your WhatsApp</h2>
+  <input type="text" id="phoneInput" placeholder="Enter phone number with country code" />
+  <button onclick="startSession()">Start</button>
+  <pre id="response"></pre>
+
+  <script>
+    function startSession() {
+      const phone = document.getElementById('phoneInput').value;
+
+      fetch('/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('response').textContent = JSON.stringify({ status: 'error', message: err.message });
+      });
+    }
+  </script>
+</body>
+</html>
